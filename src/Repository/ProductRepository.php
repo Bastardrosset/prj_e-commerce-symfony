@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Classe\FilterSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -30,6 +31,8 @@ class ProductRepository extends ServiceEntityRepository
         }
     }
 
+
+
     public function remove(Product $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
@@ -37,6 +40,33 @@ class ProductRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * Requête qui permet de trouver les produits en fonction de la recherche de l'user
+     * @return Product[]
+     */
+    public function findWithSearch(FilterSearch $search)
+    {
+        $query = $this
+        ->createQueryBuilder('p')
+        ->select('c', 'p')
+        ->join('p.category', 'c');
+ 
+    if (!empty($search->categories)) {
+        $query = $query
+            ->andWhere('c.id IN (:categories)')
+            ->setParameter('categories', $search->categories)
+        ;
+    }
+ 
+    if (!empty($search->string)) {
+        $query = $query
+            ->orWhere('p.name LIKE :string')
+            ->setParameter('string', "%{$search->string}%")
+        ;
+    }
+    return $query->getQuery()->getResult();
     }
 
 //    /**
