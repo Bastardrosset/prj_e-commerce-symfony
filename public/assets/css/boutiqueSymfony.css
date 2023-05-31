@@ -2,6 +2,10 @@
 body{
     min-height: 100vh;
 }
+/**** Carousel img ****/
+.uploadTrout{
+    background-size: contain;
+}
 /*****  NavBar  *****/
 .navbar-items-custom, .navbar-items-custom a{
     color: white;
